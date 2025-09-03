@@ -1,10 +1,12 @@
 from typing import Callable
 import time
+import click
+import random
 
 def time_algorithm(algo: Callable[[], [list[int]]], arr: list[int]) -> float:
-    start = time.time()
+    start = time.perf_counter()
     algo(arr.copy())
-    return time.time() - start
+    return time.perf_counter() - start
 
 
 def selection_sort(arr: list[int]) -> list[int]:
@@ -62,13 +64,22 @@ def merge_sort(arr: list[int]) -> list[int]:
     
     return merge(left, right)
     
+    
+@click.command()
+@click.option("--seed", default=100, help="seed for algorithms. Default is 100")
+def main(seed: int):
+    print("Seed set to: ", seed)
+    arr = [random.randint(0, seed) for _ in range(seed)]
+    time.sleep(1)
+    print("Running Mergesort...")
+    timed_ms = time_algorithm(merge_sort, arr)
+    time.sleep(1)
+    print(f"Mergesort took: {timed_ms} seconds")
+    print("Running Selection Sort...")
+    timed_ss = time_algorithm(selection_sort, arr)
+    print(f"Selection sort took: {timed_ss} seconds")
+    time.sleep(1)
+    print(f"\n\nFinal Times: \n Mergesort: {timed_ms} seconds\n Selection sort: {timed_ss} seconds")
 
 if __name__ == '__main__':
-    import random
-    sizes = [100, 500, 1000, 5000]
-    size = random.choice(sizes)
-    arr = [random.randint(0, size) for _ in range(size)]
-    
-    print("Before WIP merge Sort: ", arr)
-    sorted_arr = merge_sort(arr)
-    print("After merge sort: ", sorted_arr)
+    main()
